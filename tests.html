@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tests</title>
+  <style>
+    body { font-family: monospace; padding: 1rem; background: #0f172a; color: #e2e8f0; }
+    .test-row { padding: 0.25rem 0; }
+    .pass { color: #10b981; }
+    .fail { color: #ef4444; }
+    .summary { margin-top: 1rem; font-weight: bold; }
+  </style>
+  <script src="https://unpkg.com/dexie@4.0.8/dist/dexie.min.js"></script>
+</head>
+<body>
+  <h1>Test Results</h1>
+  <div id="results"></div>
+  <script type="module">
+    import { runAll } from './tests/harness.js';
+    // Test files will be imported here as they are added.
+    runAll(document.getElementById('results'));
+  </script>
+</body>
+</html>
