@@ -1,0 +1,17 @@
+{
+  "name": "GIS Antar Jemput",
+  "short_name": "GIS Transport",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "description": "Modern Pickup and Dropoff System for GIS Applications",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
