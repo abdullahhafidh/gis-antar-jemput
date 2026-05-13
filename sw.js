@@ -1,42 +1,39 @@
-const CACHE_NAME = 'gis-pwa-v1';
+const CACHE_NAME = 'gis-pwa-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './manifest.json',
-  './icon.png'
+  './icon.png',
+  './js/app.js',
+  './js/db.js',
+  './js/format.js',
+  './js/router.js',
+  './js/store.js',
+  './js/actions/drivers.js',
+  './js/actions/kids.js',
+  './js/actions/log-leg.js',
+  './js/actions/top-up.js',
+  './js/actions/history.js',
+  './js/actions/monthly.js',
+  './js/actions/sanity.js',
+  'https://unpkg.com/dexie@4.0.8/dist/dexie.min.js',
+  'https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js'
 ];
 
-// Install event - caching assets
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching all assets');
-      return cache.addAll(ASSETS);
-    })
-  );
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
 });
 
-// Activate event - cleaning old caches
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
-  );
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-// Fetch event - serving from cache
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
-    })
-  );
+  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
 });

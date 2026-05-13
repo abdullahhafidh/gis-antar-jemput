@@ -8,87 +8,24 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="icon.png">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');</style>
+    <script src="https://unpkg.com/dexie@4.0.8/dist/dexie.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
-<body>
+<body x-data x-cloak>
     <header>
-        <h1>GIS Transport</h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Modern Pickup & Dropoff System</p>
+        <h1>GIS Antar Jemput</h1>
     </header>
-
-    <main>
-        <div class="status-card">
-            <div class="icon-container">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            </div>
-            <div class="info-row">
-                <span class="label">Current Status</span>
-                <span class="value" style="color: #10b981;">● Online</span>
-            </div>
-            <div class="info-row">
-                <span class="label">PWA Mode</span>
-                <span id="pwa-status" class="value">Checking...</span>
-            </div>
-            <div class="info-row" style="border: none;">
-                <span class="label">Location</span>
-                <span class="value">Jakarta, ID</span>
-            </div>
-            <button class="btn" id="btn-request">Request Pickup</button>
-        </div>
-
-        <div id="install-banner" class="install-banner">
-            <div>
-                <strong style="display: block;">Install App</strong>
-                <span style="font-size: 0.8rem; color: #666;">Add to home screen for offline use</span>
-            </div>
-            <button class="btn" id="btn-install" style="width: auto; padding: 0.5rem 1rem;">Install</button>
-        </div>
+    <main id="app">
+        <div x-show="$store.app.ready === false">Loading…</div>
+        <div x-show="$store.app.ready" id="view-root"></div>
     </main>
-
-    <script>
-        // PWA Status
-        const pwaStatus = document.getElementById('pwa-status');
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            pwaStatus.innerText = 'Installed (Standalone)';
-        } else {
-            pwaStatus.innerText = 'Browser View';
-        }
-
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered', reg))
-                    .catch(err => console.log('SW Failed', err));
-            });
-        }
-
-        // Install Prompt
-        let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBanner.style.display = 'flex';
-        });
-
-        document.getElementById('btn-install').addEventListener('click', () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choice) => {
-                    if (choice.outcome === 'accepted') {
-                        installBanner.style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        });
-
-        document.getElementById('btn-request').addEventListener('click', () => {
-            alert('Requesting pickup... Searching for nearest driver.');
-        });
-    </script>
+    <nav id="tabbar">
+        <a href="#/" data-route="/">Home</a>
+        <a href="#/drivers" data-route="/drivers">Drivers</a>
+        <a href="#/kids" data-route="/kids">Kids</a>
+    </nav>
+    <div id="toast-root" x-data="$store.toast" x-show="visible" x-text="message"></div>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
