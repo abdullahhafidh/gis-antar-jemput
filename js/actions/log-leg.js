@@ -19,10 +19,14 @@ export async function logLeg(db, kidId, type) {
       occurredAt: new Date().toISOString()
     });
     const currentDeposit = Number(driver.deposit) || 0;
-    await db.drivers.update(dId, { deposit: currentDeposit - amount });
+    const newDeposit = currentDeposit - amount;
+    console.log('[logLeg] updating driver', { dId, was: currentDeposit, now: newDeposit });
+    await db.drivers.update(dId, { deposit: newDeposit });
+    const verify = await db.drivers.get(dId);
+    console.log('[logLeg] verify deposit in DB:', verify.deposit);
     return {
       trip: await db.trips.get(tripId),
-      driver: await db.drivers.get(dId)
+      driver: verify
     };
   });
 }

@@ -145,10 +145,10 @@ export function registerStores(Alpine) {
           `${type === 'pickup' ? 'Pickup' : 'Delivery'} logged · −${formatIDR(trip.amount)} · ${driver.name}`,
           { tone: driver.deposit < 0 ? 'err' : 'ok',
             undo: async () => { try { await undoLogLeg(db, trip.id); await this.refreshLists();
-              if (this.driverDetail?.driver.id === driver.id) await this.openDriverDetail(driver.id); } catch (e) { alert(e.message); } }
+              if (this.driverDetail?.driver.id == driver.id) await this.openDriverDetail(driver.id); } catch (e) { alert(e.message); } }
           }
         );
-        if (this.driverDetail?.driver.id === driver.id) await this.openDriverDetail(driver.id);
+        if (this.driverDetail?.driver.id == driver.id) await this.openDriverDetail(driver.id);
       } catch (e) {
         alert(e.message);
       }
@@ -161,9 +161,9 @@ export function registerStores(Alpine) {
         Alpine.store('toast').show(
           `+${formatIDR(topup.amount)} added to ${driver.name}`,
           { undo: async () => { try { await undoTopUp(db, topup.id); await this.refreshLists();
-            if (this.driverDetail?.driver.id === driver.id) await this.openDriverDetail(driver.id); } catch (e) { alert(e.message); } } }
+            if (this.driverDetail?.driver.id == driver.id) await this.openDriverDetail(driver.id); } catch (e) { alert(e.message); } } }
         );
-        if (this.driverDetail?.driver.id === driverId) await this.openDriverDetail(driverId);
+        if (this.driverDetail?.driver.id == driverId) await this.openDriverDetail(driverId);
       } catch (e) {
         alert(e.message);
       }

@@ -10,11 +10,14 @@ export async function topUp(db, driverId, amount, note = '') {
       driverId: dId, amount: rounded, note, occurredAt: new Date().toISOString()
     });
     const currentDeposit = Number(driver.deposit) || 0;
-    console.log('[topUp] updating driver', { dId, was: currentDeposit, add: rounded });
-    await db.drivers.update(dId, { deposit: currentDeposit + rounded });
+    const newDeposit = currentDeposit + rounded;
+    console.log('[topUp] updating driver', { dId, was: currentDeposit, add: rounded, now: newDeposit });
+    await db.drivers.update(dId, { deposit: newDeposit });
+    const verify = await db.drivers.get(dId);
+    console.log('[topUp] verify deposit in DB:', verify.deposit);
     return {
       topup: await db.topups.get(id),
-      driver: await db.drivers.get(dId)
+      driver: verify
     };
   });
 }

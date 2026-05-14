@@ -10,9 +10,9 @@ export async function recomputeDeposits(db) {
     const expected = tops.reduce((s, t) => s + (Number(t.amount) || 0), 0)
                    - trips.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (expected !== d.deposit) {
-      await db.drivers.update(d.id, { deposit: expected });
-      fixes.push({ driverId: d.id, was: d.deposit, now: expected });
-      console.warn('[sanity] fixed deposit for driver', d.id, { was: d.deposit, now: expected });
+      console.warn(`[sanity] Fixing deposit for driver ${dId} (${d.name}): ${d.deposit} -> ${expected}`);
+      await db.drivers.update(dId, { deposit: expected });
+      fixes.push({ driverId: dId, was: d.deposit, now: expected });
     }
   }
   return fixes;
