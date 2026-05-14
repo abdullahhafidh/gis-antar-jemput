@@ -61,7 +61,7 @@
                         </button>
                         <div x-show="showArchived" class="mt-2" style="background: var(--wa-white); text-align: left;">
                             <template x-for="d in $store.app.drivers.filter(d => d.archived)" :key="d.id">
-                                <article class="list-item" style="opacity: 0.6;" @click="$store.app.openDriverDetail(d.id)">
+                                <article class="list-item" @click="location.hash = '#/drivers/' + d.id">
                                     <div class="item-avatar driver"><i class="fas fa-user-slash"></i></div>
                                     <div class="item-content">
                                         <div class="item-header"><span class="item-title" x-text="d.name"></span></div>
@@ -185,14 +185,14 @@
             </template>
 
             <!-- Driver Detail View -->
-            <template x-if="$store.app.route.name === 'driver-detail'">
+            <template x-if="$store.app.route.name === 'driverDetail'">
                 <section x-data="{ tab: 'history', topUpForm: null, editDriver: null }">
                     <template x-if="$store.app.driverDetail">
                         <div class="driver-detail-page">
                             
                             <div class="detail-header-card">
                                 <div class="flex items-center gap-2 mb-4">
-                                    <button class="btn btn-ghost btn-small" style="padding:0; font-size:1.25rem;" @click="$store.app.route = { name: 'home', params: {} }">
+                                    <button class="btn btn-ghost btn-small" style="padding:0; font-size:1.25rem;" @click="location.hash = '#/'">
                                         <i class="fas fa-arrow-left"></i>
                                     </button>
                                     <div class="item-avatar driver" style="width: 40px; height: 40px; margin:0;"><i class="fas fa-user"></i></div>
@@ -350,11 +350,11 @@
 
     <!-- Navigation Tab Bar -->
     <nav id="tabbar" x-show="$store.app.ready">
-        <a href="#" class="tab-item" :class="$store.app.route.name === 'home' ? 'active' : ''" @click.prevent="$store.app.route = { name: 'home', params: {} }">
+        <a href="#/" class="tab-item" :class="['home', 'driverDetail'].includes($store.app.route.name) ? 'active' : ''">
             <i class="fas fa-comment-dots"></i>
             <span>Drivers</span>
         </a>
-        <a href="#" class="tab-item" :class="$store.app.route.name === 'kids' ? 'active' : ''" @click.prevent="$store.app.route = { name: 'kids', params: {} }">
+        <a href="#/kids" class="tab-item" :class="$store.app.route.name === 'kids' ? 'active' : ''">
             <i class="fas fa-users"></i>
             <span>Kids</span>
         </a>
