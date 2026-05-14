@@ -1,10 +1,10 @@
 export function createDb(name) {
   const db = new globalThis.Dexie(name);
-  db.version(1).stores({
-    drivers: '++id, name, createdAt, archived',
-    kids:    '++id, name, driverId, createdAt',
-    trips:   '++id, driverId, kidId, type, occurredAt',
-    topups:  '++id, driverId, occurredAt'
+  db.version(2).stores({
+    drivers: '++id,name,createdAt,archived',
+    kids:    '++id,name,driverId,createdAt',
+    trips:   '++id,driverId,kidId,type,occurredAt',
+    topups:  '++id,driverId,occurredAt'
   });
   return db;
 }

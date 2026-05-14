@@ -1,5 +1,7 @@
 export async function recomputeDeposits(db) {
   const drivers = await db.drivers.toArray();
+  const allTops = await db.topups.toArray();
+  console.log('[sanity] ALL topups in DB:', allTops);
   const fixes = [];
   for (const d of drivers) {
     const dId = Number(d.id);

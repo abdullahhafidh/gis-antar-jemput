@@ -9,6 +9,8 @@ export async function topUp(db, driverId, amount, note = '') {
     const id = await db.topups.add({
       driverId: dId, amount: rounded, note, occurredAt: new Date().toISOString()
     });
+    const immediateCheck = await db.topups.where('driverId').equals(dId).toArray();
+    console.log('[topUp] check query after add:', { dId, count: immediateCheck.length });
     const currentDeposit = Number(driver.deposit) || 0;
     const newDeposit = currentDeposit + rounded;
     console.log('[topUp] updating driver', { dId, was: currentDeposit, add: rounded, now: newDeposit });
