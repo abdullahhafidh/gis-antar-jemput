@@ -18,6 +18,20 @@ export function createDb(name) {
     topups:  '++id,driverId,occurredAt'
   });
   console.log('DB created:', db.name, 'v' + db.verno);
+  
+  const _origTx = db.transaction.bind(db);
+  db.transaction = (mode, tables, cb) => {
+    const id = Math.random().toString(36).substring(7);
+    console.log(`[db] TX ${id} START`, { mode, tables });
+    return _origTx(mode, tables, cb).then(res => {
+      console.log(`[db] TX ${id} COMMIT SUCCESS`);
+      return res;
+    }).catch(err => {
+      console.error(`[db] TX ${id} ROLLBACK`, err);
+      throw err;
+    });
+  };
+
   return db;
 }
 export const db = createDb('gisv5');
