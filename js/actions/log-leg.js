@@ -8,7 +8,7 @@ export async function logLeg(db, kidId, type) {
     if (kid.driverId == null) throw new Error('kid has no assigned driver');
     const driver = await db.drivers.get(kid.driverId);
     if (!driver) throw new Error('assigned driver missing');
-    const amount = driver.dailyRate;
+    const amount = Number(driver.dailyRate) || 0;
     const tripId = await db.trips.add({
       driverId: driver.id,
       kidId: kid.id,
@@ -16,7 +16,8 @@ export async function logLeg(db, kidId, type) {
       amount,
       occurredAt: new Date().toISOString()
     });
-    await db.drivers.update(driver.id, { deposit: driver.deposit - amount });
+    const currentDeposit = Number(driver.deposit) || 0;
+    await db.drivers.update(driver.id, { deposit: currentDeposit - amount });
     return {
       trip: await db.trips.get(tripId),
       driver: await db.drivers.get(driver.id)

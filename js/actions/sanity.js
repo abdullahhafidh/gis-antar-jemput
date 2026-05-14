@@ -6,8 +6,8 @@ export async function recomputeDeposits(db) {
       db.trips.where({ driverId: d.id }).toArray(),
       db.topups.where({ driverId: d.id }).toArray()
     ]);
-    const expected = tops.reduce((s, t) => s + t.amount, 0)
-                   - trips.reduce((s, t) => s + t.amount, 0);
+    const expected = tops.reduce((s, t) => s + (Number(t.amount) || 0), 0)
+                   - trips.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (expected !== d.deposit) {
       await db.drivers.update(d.id, { deposit: expected });
       fixes.push({ driverId: d.id, was: d.deposit, now: expected });

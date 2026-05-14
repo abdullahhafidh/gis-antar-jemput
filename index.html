@@ -68,10 +68,10 @@
             <a :href="'#/drivers/' + d.id"><strong x-text="d.name"></strong></a>
             <span class="muted" x-text="d.archived ? '(archived)' : ''"></span>
           </header>
-          <div class="row"><span>Rate</span><span x-text="'Rp ' + d.dailyRate.toLocaleString('id-ID')"></span></div>
+          <div class="row"><span>Rate</span><span x-text="'Rp ' + (d.dailyRate || 0).toLocaleString('id-ID')"></span></div>
           <div class="row" :class="{ low: $store.app.isLowBalance(d) }">
             <span>Deposit</span>
-            <span x-text="'Rp ' + d.deposit.toLocaleString('id-ID')"></span>
+            <span x-text="'Rp ' + (d.deposit || 0).toLocaleString('id-ID')"></span>
           </div>
           <div class="actions">
             <button class="btn btn-ghost" @click="form = { name: d.name, phone: d.phone, dailyRate: d.dailyRate, lowBalanceThresholdLegs: d.lowBalanceThresholdLegs }; editingId = d.id">Edit</button>
@@ -120,9 +120,9 @@
           <div>
             <span class="muted">Deposit</span>
             <strong :class="{ low: $store.app.isLowBalance($store.app.driverDetail.driver) }"
-                    x-text="'Rp ' + $store.app.driverDetail.driver.deposit.toLocaleString('id-ID')"></strong>
+                    x-text="'Rp ' + ($store.app.driverDetail.driver.deposit || 0).toLocaleString('id-ID')"></strong>
           </div>
-          <div><span class="muted">Daily rate</span><strong x-text="'Rp ' + $store.app.driverDetail.driver.dailyRate.toLocaleString('id-ID')"></strong></div>
+          <div><span class="muted">Daily rate</span><strong x-text="'Rp ' + ($store.app.driverDetail.driver.dailyRate || 0).toLocaleString('id-ID')"></strong></div>
           <div><span class="muted">Legs remaining</span><strong x-text="Math.floor($store.app.driverDetail.driver.deposit / $store.app.driverDetail.driver.dailyRate)"></strong></div>
         </div>
         <button class="btn" @click="topUpForm = { amount: 0, note: '' }">Top Up</button>
@@ -137,7 +137,7 @@
             <div class="history-row" :class="row.kind">
               <span class="muted" x-text="new Date(row.occurredAt).toLocaleString('id-ID')"></span>
               <span x-text="row.kind === 'trip' ? row.type : 'top-up'"></span>
-              <span x-text="(row.kind === 'trip' ? '−' : '+') + 'Rp ' + row.amount.toLocaleString('id-ID')"></span>
+              <span x-text="(row.kind === 'trip' ? '−' : '+') + 'Rp ' + (row.amount || 0).toLocaleString('id-ID')"></span>
               <button class="btn btn-ghost btn-small" @click="
                 (async () => { if (confirm('Delete this entry?')) {
                   if (row.kind === 'trip') await $store.app.deleteTrip(row.id);
@@ -160,13 +160,13 @@
                 else await $store.app.setMonth($store.app.driverDetail.selectedYear, m); })()">→</button>
           </div>
           <div class="row"><span>Trips</span><strong x-text="$store.app.driverDetail.monthly.tripCount"></strong></div>
-          <div class="row"><span>Trip total</span><strong x-text="'Rp ' + $store.app.driverDetail.monthly.tripTotal.toLocaleString('id-ID')"></strong></div>
-          <div class="row"><span>Top-ups</span><strong x-text="'Rp ' + $store.app.driverDetail.monthly.topupTotal.toLocaleString('id-ID')"></strong></div>
+          <div class="row"><span>Trip total</span><strong x-text="'Rp ' + ($store.app.driverDetail.monthly.tripTotal || 0).toLocaleString('id-ID')"></strong></div>
+          <div class="row"><span>Top-ups</span><strong x-text="'Rp ' + ($store.app.driverDetail.monthly.topupTotal || 0).toLocaleString('id-ID')"></strong></div>
           <h4>Per kid</h4>
           <template x-for="pk in $store.app.driverDetail.monthly.perKid" :key="pk.kidId">
             <div class="row">
               <span x-text="$store.app.kids.find(k => k.id === pk.kidId)?.name || ('Kid ' + pk.kidId)"></span>
-              <span x-text="pk.count + ' legs · Rp ' + pk.total.toLocaleString('id-ID')"></span>
+              <span x-text="pk.count + ' legs · Rp ' + (pk.total || 0).toLocaleString('id-ID')"></span>
             </div>
           </template>
           <button class="btn" @click="
@@ -174,8 +174,8 @@
               const m = $store.app.driverDetail.monthly;
               const d = $store.app.driverDetail.driver;
               const text = `${d.name} — ${m.year}-${String(m.month).padStart(2, '0')}\n`
-                + `Trips: ${m.tripCount} (Rp ${m.tripTotal.toLocaleString('id-ID')})\n`
-                + `Top-ups: Rp ${m.topupTotal.toLocaleString('id-ID')}`;
+                + `Trips: ${m.tripCount} (Rp ${(m.tripTotal || 0).toLocaleString('id-ID')})\n`
+                + `Top-ups: Rp ${(m.topupTotal || 0).toLocaleString('id-ID')}`;
               if (navigator.share) navigator.share({ text }).catch(() => {});
               else { navigator.clipboard.writeText(text); alert('Copied to clipboard'); }
             })()">Share</button>
