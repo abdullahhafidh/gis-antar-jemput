@@ -4,11 +4,13 @@ import { undoTopUp } from './top-up.js';
 export async function listHistory(db, driverId) {
   const dId = Number(driverId);
   const allTops = await db.topups.toArray();
+  const allTrips = await db.trips.toArray();
   console.log('[listHistory] ALL topups in DB:', allTops);
-  const [trips, tops] = await Promise.all([
-    db.trips.where('driverId').equals(dId).toArray(),
-    db.topups.where('driverId').equals(dId).toArray()
-  ]);
+  console.log('[listHistory] Searching for dId:', dId);
+
+  const trips = allTrips.filter(t => Number(t.driverId) === dId);
+  const tops = allTops.filter(t => Number(t.driverId) === dId);
+  console.log('[listHistory] Found matches:', { trips: trips.length, tops: tops.length });
   const rows = [
     ...trips.map(t => ({
       kind: 'trip', id: t.id, occurredAt: t.occurredAt,

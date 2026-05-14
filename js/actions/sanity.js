@@ -5,10 +5,8 @@ export async function recomputeDeposits(db) {
   const fixes = [];
   for (const d of drivers) {
     const dId = Number(d.id);
-    const [trips, tops] = await Promise.all([
-      db.trips.where('driverId').equals(dId).toArray(),
-      db.topups.where('driverId').equals(dId).toArray()
-    ]);
+    const trips = (await db.trips.toArray()).filter(t => Number(t.driverId) === dId);
+    const tops = (await db.topups.toArray()).filter(t => Number(t.driverId) === dId);
     console.log(`[sanity] driver ${dId} has ${trips.length} trips and ${tops.length} topups`);
     const expected = tops.reduce((s, t) => s + (Number(t.amount) || 0), 0)
                    - trips.reduce((s, t) => s + (Number(t.amount) || 0), 0);

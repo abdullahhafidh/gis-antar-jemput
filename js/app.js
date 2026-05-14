@@ -8,7 +8,7 @@ document.addEventListener('alpine:init', () => {
 document.addEventListener('alpine:initialized', async () => {
   const app = globalThis.Alpine.store('app');
   try {
-    await app.init();
+    await app.bootstrap();
   } catch (err) {
     document.getElementById('view-root').innerHTML =
       `<div class="error-screen">

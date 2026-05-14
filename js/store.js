@@ -38,7 +38,7 @@ export function registerStores(Alpine) {
     todayLegs: [],
     driverDetail: null,
 
-    async init() {
+    async bootstrap() {
       await db.open();
       await recomputeDeposits(db);
       await this.refreshLists();
