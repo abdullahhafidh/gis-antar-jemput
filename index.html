@@ -186,7 +186,7 @@
           <div class="modal-backdrop" x-cloak @click.self="topUpForm = null">
             <div class="modal">
               <h3>Top up</h3>
-              <label>Amount (Rp) <input type="number" min="1" x-model.number="topUpForm.amount"></label>
+              <label>Amount (Rp) <input type="number" x-model.number="topUpForm.amount"></label>
               <label>Note <input x-model="topUpForm.note"></label>
               <div class="actions">
                 <button class="btn" @click="
