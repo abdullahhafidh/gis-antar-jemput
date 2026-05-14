@@ -7,7 +7,17 @@ document.addEventListener('alpine:init', () => {
 
 document.addEventListener('alpine:initialized', async () => {
   const app = globalThis.Alpine.store('app');
-  await app.init();
+  try {
+    await app.init();
+  } catch (err) {
+    document.getElementById('view-root').innerHTML =
+      `<div class="error-screen">
+         <h2>Storage unavailable</h2>
+         <p>This app needs IndexedDB. The browser refused with: <code>${err.message}</code>.</p>
+         <p>If you're in Private/Incognito mode, try a regular window.</p>
+       </div>`;
+    return;
+  }
   startRouter(route => app.routeChanged(route));
 });
 
