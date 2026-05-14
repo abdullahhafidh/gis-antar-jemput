@@ -1,26 +1,26 @@
 import { registerStores } from './store.js';
 import { startRouter } from './router.js';
 
+globalThis.formatIDR = (val) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(val || 0);
+};
+
+globalThis.formatDate = (iso) => {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 document.addEventListener('alpine:init', () => {
   registerStores(globalThis.Alpine);
-  
-  globalThis.formatIDR = (val) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(val || 0);
-  };
-  
-  globalThis.formatDate = (iso) => {
-    if (!iso) return '-';
-    return new Date(iso).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 });
 
 document.addEventListener('alpine:initialized', async () => {

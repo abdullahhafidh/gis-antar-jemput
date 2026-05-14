@@ -6,7 +6,7 @@
     <title>GIS Antar Jemput</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0f1d">
+    <meta name="theme-color" content="#128C7E">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://unpkg.com/dexie@4.0.8/dist/dexie.min.js"></script>
@@ -14,96 +14,93 @@
 <body x-data x-cloak>
     <header>
         <h1>GIS Antar Jemput</h1>
-        <div class="version" style="font-size: 0.7rem; opacity: 0.5;">v1.0.10</div>
+        <div class="version" style="font-size: 0.7rem; opacity: 0.8;">v1.0.11</div>
     </header>
 
     <main id="app">
         <div x-show="$store.app.ready === false" class="empty-state">
             <i class="fas fa-circle-notch fa-spin"></i>
-            <p>Initializing...</p>
+            <p>Loading chats...</p>
         </div>
 
         <div id="view-root" x-show="$store.app.ready">
-            <!-- Drivers View -->
+            <!-- Drivers View (Chats Style) -->
             <template x-if="$store.app.route.name === 'home'">
                 <section x-data="{ form: null, editingId: null }">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="section-title">Drivers</h2>
-                        <button class="btn btn-primary btn-small" @click="form = { name: '', dailyRate: 25000, initialDeposit: 0 }; editingId = null">
-                            <i class="fas fa-plus"></i> Add Driver
-                        </button>
-                    </div>
-
                     <template x-if="$store.app.activeDrivers().length === 0">
                         <div class="empty-state">
-                            <i class="fas fa-user-friends"></i>
+                            <i class="fas fa-users"></i>
                             <p>No active drivers yet.</p>
-                            <button class="btn btn-primary mt-4" @click="form = { name: '', dailyRate: 25000, initialDeposit: 0 }; editingId = null">Add your first driver</button>
                         </div>
                     </template>
 
-                    <template x-for="d in $store.app.activeDrivers()" :key="d.id">
-                        <article class="list-item" @click="$store.app.openDriverDetail(d.id)">
-                            <div class="item-info">
-                                <span class="item-title" x-text="d.name"></span>
-                                <span class="item-subtitle" x-text="'Rate: ' + formatIDR(d.dailyRate)"></span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span :class="d.deposit < (d.dailyRate * d.lowBalanceThresholdLegs) ? 'badge badge-low' : 'badge badge-ok'" 
-                                      x-text="formatIDR(d.deposit)"></span>
-                                <i class="fas fa-chevron-right muted" style="font-size: 0.8rem;"></i>
-                            </div>
-                        </article>
-                    </template>
+                    <div style="background: var(--wa-white);">
+                        <template x-for="d in $store.app.activeDrivers()" :key="d.id">
+                            <article class="list-item" @click="$store.app.openDriverDetail(d.id)">
+                                <div class="item-avatar driver">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-header">
+                                        <span class="item-title" x-text="d.name"></span>
+                                        <span class="item-right" x-text="formatIDR(d.deposit)" :class="d.deposit < (d.dailyRate * d.lowBalanceThresholdLegs) ? 'badge-low' : 'badge-ok'"></span>
+                                    </div>
+                                    <div class="item-subtitle">
+                                        <span x-text="'Rate: ' + formatIDR(d.dailyRate)"></span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                            </article>
+                        </template>
+                    </div>
 
                     <!-- Archived Drivers Toggle -->
-                    <div class="mt-4" x-data="{ showArchived: false }">
-                        <button class="btn btn-ghost btn-small w-full" @click="showArchived = !showArchived" x-show="$store.app.drivers.some(d => d.archived)">
+                    <div class="mt-4" x-data="{ showArchived: false }" style="text-align: center;">
+                        <button class="btn btn-ghost btn-small" @click="showArchived = !showArchived" x-show="$store.app.drivers.some(d => d.archived)">
                             <span x-text="showArchived ? 'Hide Archived' : 'Show Archived'"></span>
                         </button>
-                        <div x-show="showArchived" class="mt-2">
+                        <div x-show="showArchived" class="mt-2" style="background: var(--wa-white); text-align: left;">
                             <template x-for="d in $store.app.drivers.filter(d => d.archived)" :key="d.id">
                                 <article class="list-item" style="opacity: 0.6;" @click="$store.app.openDriverDetail(d.id)">
-                                    <div class="item-info">
-                                        <span class="item-title" x-text="d.name"></span>
-                                        <span class="item-subtitle">Archived</span>
+                                    <div class="item-avatar driver"><i class="fas fa-user-slash"></i></div>
+                                    <div class="item-content">
+                                        <div class="item-header"><span class="item-title" x-text="d.name"></span></div>
+                                        <div class="item-subtitle">Archived</div>
                                     </div>
-                                    <i class="fas fa-chevron-right muted"></i>
                                 </article>
                             </template>
                         </div>
                     </div>
 
+                    <button class="fab" @click="form = { name: '', dailyRate: 25000, initialDeposit: 0 }; editingId = null">
+                        <i class="fas fa-plus"></i>
+                    </button>
+
                     <!-- Add/Edit Driver Modal -->
                     <template x-if="form">
                         <div class="modal-backdrop" x-cloak @click.self="form = null">
                             <div class="modal">
-                                <h3 x-text="editingId ? 'Edit Driver' : 'Add Driver'"></h3>
-                                <div class="form-body">
-                                    <label>Name</label>
-                                    <input x-model="form.name" placeholder="Driver name">
-                                    
-                                    <label>Daily Rate (Rp)</label>
-                                    <input type="number" x-model.number="form.dailyRate">
-                                    
-                                    <template x-if="!editingId">
-                                        <div>
-                                            <label>Initial Deposit (Rp)</label>
-                                            <input type="number" x-model.number="form.initialDeposit">
-                                        </div>
-                                    </template>
-
-                                    <div class="actions flex gap-2 mt-4">
-                                        <button class="btn btn-primary w-full" @click="
-                                            (async () => {
-                                                try {
-                                                    if (editingId) await $store.app.updateDriver(editingId, form);
-                                                    else await $store.app.addDriver(form);
-                                                    form = null;
-                                                } catch (e) { alert(e.message); }
-                                            })()">Save</button>
-                                        <button class="btn btn-secondary" @click="form = null">Cancel</button>
+                                <h3 x-text="editingId ? 'Edit Driver' : 'New Driver'"></h3>
+                                <label>Name</label>
+                                <input x-model="form.name" placeholder="Type a name">
+                                <label>Daily Rate (Rp)</label>
+                                <input type="number" x-model.number="form.dailyRate">
+                                <template x-if="!editingId">
+                                    <div>
+                                        <label>Initial Deposit (Rp)</label>
+                                        <input type="number" x-model.number="form.initialDeposit">
                                     </div>
+                                </template>
+                                <div class="flex justify-between mt-4">
+                                    <button class="btn btn-ghost" @click="form = null">CANCEL</button>
+                                    <button class="btn btn-ghost" style="font-weight: 600;" @click="
+                                        (async () => {
+                                            try {
+                                                if (editingId) await $store.app.updateDriver(editingId, form);
+                                                else await $store.app.addDriver(form);
+                                                form = null;
+                                            } catch (e) { alert(e.message); }
+                                        })()">SAVE</button>
                                 </div>
                             </div>
                         </div>
@@ -114,13 +111,6 @@
             <!-- Kids View -->
             <template x-if="$store.app.route.name === 'kids'">
                 <section x-data="{ form: null, editingId: null }">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="section-title">Kids</h2>
-                        <button class="btn btn-primary btn-small" @click="form = { name: '', driverId: null }; editingId = null">
-                            <i class="fas fa-plus"></i> Add Kid
-                        </button>
-                    </div>
-
                     <template x-if="$store.app.kids.length === 0">
                         <div class="empty-state">
                             <i class="fas fa-child"></i>
@@ -128,34 +118,48 @@
                         </div>
                     </template>
 
-                    <template x-for="k in $store.app.kids" :key="k.id">
-                        <article class="list-item">
-                            <div class="item-info">
-                                <span class="item-title" x-text="k.name"></span>
-                                <span class="item-subtitle" x-text="$store.app.driverById(k.driverId)?.name || 'Unassigned'"></span>
-                            </div>
-                            <div class="actions flex gap-2">
-                                <button class="btn btn-ghost btn-small" @click="form = { name: k.name, driverId: k.driverId }; editingId = k.id">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-danger btn-small" @click="
-                                    (async () => { if (confirm('Delete ' + k.name + '?')) {
-                                        try { await $store.app.deleteKid(k.id); } catch(e) { alert(e.message); }
-                                    } })()">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </article>
-                    </template>
+                    <div style="background: var(--wa-white);">
+                        <template x-for="k in $store.app.kids" :key="k.id">
+                            <article class="list-item" style="flex-wrap: wrap;">
+                                <div class="item-avatar kid">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-header">
+                                        <span class="item-title" x-text="k.name"></span>
+                                        <div class="flex gap-2">
+                                            <button class="btn btn-ghost btn-small" @click="form = { name: k.name, driverId: k.driverId }; editingId = k.id"><i class="fas fa-pen"></i></button>
+                                            <button class="btn btn-ghost btn-small" style="color: var(--wa-danger);" @click="(async () => { if (confirm('Delete ' + k.name + '?')) { try { await $store.app.deleteKid(k.id); } catch(e) { alert(e.message); } } })()"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="item-subtitle" x-text="$store.app.driverById(k.driverId)?.name || 'Unassigned'"></div>
+                                    
+                                    <template x-if="k.driverId">
+                                        <div class="flex gap-2 mt-4" style="width: 100%;">
+                                            <button class="btn btn-secondary w-full" @click="(async () => { try { await $store.app.logLegFor(k.id, 'pickup'); } catch(e) { alert(e.message); } })()">
+                                                <i class="fas fa-sun" style="color: #FFB300;"></i> Pickup
+                                            </button>
+                                            <button class="btn btn-secondary w-full" @click="(async () => { try { await $store.app.logLegFor(k.id, 'delivery'); } catch(e) { alert(e.message); } })()">
+                                                <i class="fas fa-moon" style="color: #5C6BC0;"></i> Delivery
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </article>
+                        </template>
+                    </div>
+
+                    <button class="fab" @click="form = { name: '', driverId: null }; editingId = null">
+                        <i class="fas fa-plus"></i>
+                    </button>
 
                     <!-- Add/Edit Kid Modal -->
                     <template x-if="form">
                         <div class="modal-backdrop" x-cloak @click.self="form = null">
                             <div class="modal">
-                                <h3 x-text="editingId ? 'Edit Kid' : 'Add Kid'"></h3>
+                                <h3 x-text="editingId ? 'Edit Kid' : 'New Kid'"></h3>
                                 <label>Name</label>
                                 <input x-model="form.name" placeholder="Kid's name">
-                                
                                 <label>Assigned Driver</label>
                                 <select x-model.number="form.driverId">
                                     <option :value="null">No driver</option>
@@ -163,17 +167,16 @@
                                         <option :value="d.id" x-text="d.name"></option>
                                     </template>
                                 </select>
-
-                                <div class="actions flex gap-2 mt-4">
-                                    <button class="btn btn-primary w-full" @click="
+                                <div class="flex justify-between mt-4">
+                                    <button class="btn btn-ghost" @click="form = null">CANCEL</button>
+                                    <button class="btn btn-ghost" style="font-weight: 600;" @click="
                                         (async () => {
                                             try {
                                                 if (editingId) await $store.app.updateKid(editingId, form);
                                                 else await $store.app.addKid(form);
                                                 form = null;
                                             } catch (e) { alert(e.message); }
-                                        })()">Save</button>
-                                    <button class="btn btn-secondary" @click="form = null">Cancel</button>
+                                        })()">SAVE</button>
                                 </div>
                             </div>
                         </div>
@@ -186,57 +189,58 @@
                 <section x-data="{ tab: 'history', topUpForm: null, editDriver: null }">
                     <template x-if="$store.app.driverDetail">
                         <div class="driver-detail-page">
-                            <button class="btn btn-ghost mb-4" @click="$store.app.route = { name: 'home', params: {} }">
-                                <i class="fas fa-arrow-left"></i> Back
-                            </button>
-
-                            <div class="driver-detail-header">
-                                <h2 x-text="$store.app.driverDetail.driver.name"></h2>
-                                <div class="flex items-center gap-2">
-                                    <span class="muted" x-text="'Daily Rate: ' + formatIDR($store.app.driverDetail.driver.dailyRate)"></span>
+                            
+                            <div class="detail-header-card">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <button class="btn btn-ghost btn-small" style="padding:0; font-size:1.25rem;" @click="$store.app.route = { name: 'home', params: {} }">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </button>
+                                    <div class="item-avatar driver" style="width: 40px; height: 40px; margin:0;"><i class="fas fa-user"></i></div>
+                                    <div style="flex:1;">
+                                        <h2 x-text="$store.app.driverDetail.driver.name" style="margin:0; font-size: 1.1rem; font-weight: 500;"></h2>
+                                        <div class="muted" style="font-size: 0.8rem;" x-text="'Rate: ' + formatIDR($store.app.driverDetail.driver.dailyRate)"></div>
+                                    </div>
                                     <button class="btn btn-ghost btn-small" @click="editDriver = { name: $store.app.driverDetail.driver.name, dailyRate: $store.app.driverDetail.driver.dailyRate }">
-                                        <i class="fas fa-pen"></i>
+                                        <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="card">
-                                <div class="stat-label">Current Deposit</div>
-                                <div class="flex justify-between items-end">
-                                    <div class="stat-value" style="font-size: 2rem; background: linear-gradient(to right, #fff, var(--primary-light)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;" x-text="formatIDR($store.app.driverDetail.driver.deposit)"></div>
-                                    <button class="btn btn-primary btn-small" @click="topUpForm = { amount: 50000, note: '' }">
-                                        <i class="fas fa-plus-circle"></i> Top up
-                                    </button>
-                                </div>
+                            <div class="deposit-box">
+                                <div class="muted">Current Deposit</div>
+                                <div class="amount" x-text="formatIDR($store.app.driverDetail.driver.deposit)"></div>
                                 <div x-show="$store.app.driverDetail.driver.deposit < ($store.app.driverDetail.driver.dailyRate * $store.app.driverDetail.driver.lowBalanceThresholdLegs)" 
-                                     class="badge badge-low mt-2">
+                                     class="badge badge-low mb-2">
                                     <i class="fas fa-exclamation-triangle"></i> Low Balance
                                 </div>
+                                <div>
+                                    <button class="btn btn-primary" @click="topUpForm = { amount: 50000, note: '' }">
+                                        <i class="fas fa-wallet"></i> Top up
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="tabs flex gap-2 mb-4">
-                                <button class="btn btn-small" :class="tab === 'history' ? 'btn-primary' : 'btn-ghost'" @click="tab = 'history'">History</button>
-                                <button class="btn btn-small" :class="tab === 'stats' ? 'btn-primary' : 'btn-ghost'" @click="tab = 'stats'">Summary</button>
+                            <div class="wa-tabs">
+                                <div class="wa-tab" :class="tab === 'history' ? 'active' : ''" @click="tab = 'history'">History</div>
+                                <div class="wa-tab" :class="tab === 'stats' ? 'active' : ''" @click="tab = 'stats'">Summary</div>
                             </div>
 
-                            <div x-show="tab === 'history'">
+                            <div x-show="tab === 'history'" class="history-list">
                                 <template x-if="$store.app.driverDetail.history.length === 0">
-                                    <div class="empty-state">
-                                        <i class="fas fa-history"></i>
-                                        <p>No transaction history yet.</p>
+                                    <div class="empty-state" style="background: var(--wa-bg);">
+                                        <p>No transaction history.</p>
                                     </div>
                                 </template>
                                 <template x-for="h in $store.app.driverDetail.history" :key="h.id + h.type">
                                     <div class="history-item">
-                                        <div class="history-meta">
-                                            <span class="history-kind" :class="h.type === 'trip' ? 'amount-neg' : 'amount-pos'" x-text="h.type === 'trip' ? (h.kind === 'pickup' ? 'Pickup' : 'Delivery') : 'Top Up'"></span>
-                                            <span class="history-date" x-text="formatDate(h.occurredAt)"></span>
-                                            <span class="muted" style="font-size: 0.75rem;" x-text="h.note || (h.type === 'trip' ? h.kidName : '')"></span>
+                                        <div>
+                                            <div style="font-weight: 500; color: var(--wa-text-main);" x-text="h.type === 'trip' ? (h.kind === 'pickup' ? 'Pickup' : 'Delivery') : 'Top Up'"></div>
+                                            <div class="muted" style="font-size: 0.75rem;" x-text="formatDate(h.occurredAt)"></div>
+                                            <div class="muted" style="font-size: 0.75rem;" x-text="h.note || (h.type === 'trip' ? h.kidName : '')"></div>
                                         </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="history-amount" :class="h.type === 'trip' ? 'amount-neg' : 'amount-pos'" 
-                                                  x-text="(h.type === 'trip' ? '−' : '+') + formatIDR(h.amount)"></span>
-                                            <button class="btn btn-ghost btn-small" @click="
+                                        <div style="text-align: right;">
+                                            <div :class="h.type === 'trip' ? 'amount-neg' : 'amount-pos'" x-text="(h.type === 'trip' ? '−' : '+') + formatIDR(h.amount)"></div>
+                                            <button class="btn btn-ghost btn-small" style="padding: 0; margin-top: 0.25rem; font-size: 0.7rem; color: var(--wa-danger);" @click="
                                                 (async () => { if (confirm('Undo this transaction?')) {
                                                     try {
                                                         if (h.type === 'trip') await $store.app.deleteTrip(h.id);
@@ -244,37 +248,42 @@
                                                         await $store.app.openDriverDetail($store.app.driverDetail.driver.id);
                                                     } catch(e) { alert(e.message); }
                                                 } })()">
-                                                <i class="fas fa-rotate-left"></i>
+                                                UNDO
                                             </button>
                                         </div>
                                     </div>
                                 </template>
                             </div>
 
-                            <div x-show="tab === 'stats'" x-data="{ month: new Date().toISOString().substring(0,7), summary: null }">
-                                <div class="month-picker mb-4">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <input type="month" x-model="month" @change="(async () => { summary = await $store.app.getMonthlySummary($store.app.driverDetail.driver.id, month) })()" 
-                                           x-init="summary = await $store.app.getMonthlySummary($store.app.driverDetail.driver.id, month)">
+                            <div x-show="tab === 'stats'" style="background: var(--wa-bg); padding: 1rem;">
+                                <div style="background: var(--wa-white); padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; border-radius: 4px; box-shadow: 0 1px 1px rgba(0,0,0,0.05);">
+                                    <i class="fas fa-calendar-alt text-teal"></i>
+                                    <input type="month" x-model="$store.app.driverDetail.selectedYear + '-' + String($store.app.driverDetail.selectedMonth).padStart(2, '0')" 
+                                           @change="(async (e) => { 
+                                               const parts = e.target.value.split('-');
+                                               if(parts.length === 2) {
+                                                   await $store.app.setMonth(parseInt(parts[0]), parseInt(parts[1]));
+                                               }
+                                           })($event)" style="border:none; margin:0; width:auto; font-weight: 500;">
                                 </div>
-                                <template x-if="summary">
+                                <template x-if="$store.app.driverDetail.monthly">
                                     <div class="stats-grid">
                                         <div class="stat-box">
-                                            <span class="stat-label">Trips</span>
-                                            <div class="stat-value" x-text="summary.tripsCount"></div>
+                                            <div class="label">Trips</div>
+                                            <div class="value" x-text="$store.app.driverDetail.monthly.tripsCount"></div>
                                         </div>
                                         <div class="stat-box">
-                                            <span class="stat-label">Total Earnings</span>
-                                            <div class="stat-value" x-text="formatIDR(summary.tripsAmount)"></div>
+                                            <div class="label">Earnings</div>
+                                            <div class="value" x-text="formatIDR($store.app.driverDetail.monthly.tripsAmount)"></div>
                                         </div>
                                         <div class="stat-box">
-                                            <span class="stat-label">Top Ups</span>
-                                            <div class="stat-value" x-text="formatIDR(summary.topupsAmount)"></div>
+                                            <div class="label">Top Ups</div>
+                                            <div class="value" x-text="formatIDR($store.app.driverDetail.monthly.topupsAmount)"></div>
                                         </div>
                                         <div class="stat-box">
-                                            <span class="stat-label">Net Balance Change</span>
-                                            <div class="stat-value" :class="summary.topupsAmount - summary.tripsAmount >= 0 ? 'amount-pos' : 'amount-neg'"
-                                                 x-text="formatIDR(summary.topupsAmount - summary.tripsAmount)"></div>
+                                            <div class="label">Net Change</div>
+                                            <div class="value" :class="$store.app.driverDetail.monthly.topupsAmount - $store.app.driverDetail.monthly.tripsAmount >= 0 ? 'amount-pos' : 'amount-neg'"
+                                                 x-text="formatIDR($store.app.driverDetail.monthly.topupsAmount - $store.app.driverDetail.monthly.tripsAmount)"></div>
                                         </div>
                                     </div>
                                 </template>
@@ -289,13 +298,13 @@
                                         <input type="number" x-model.number="topUpForm.amount">
                                         <label>Note</label>
                                         <input x-model="topUpForm.note" placeholder="Add a note (optional)">
-                                        <div class="actions flex gap-2 mt-4">
-                                            <button class="btn btn-primary w-full" @click="
+                                        <div class="flex justify-between mt-4">
+                                            <button class="btn btn-ghost" @click="topUpForm = null">CANCEL</button>
+                                            <button class="btn btn-ghost" style="font-weight: 600;" @click="
                                                 (async () => { try {
                                                     await $store.app.topUpDriver($store.app.driverDetail.driver.id, topUpForm.amount, topUpForm.note);
                                                     topUpForm = null;
-                                                } catch (e) { alert(e.message); } })()">Save</button>
-                                            <button class="btn btn-secondary" @click="topUpForm = null">Cancel</button>
+                                                } catch (e) { alert(e.message); } })()">SAVE</button>
                                         </div>
                                     </div>
                                 </div>
@@ -311,14 +320,16 @@
                                         <label>Daily Rate (Rp)</label>
                                         <input type="number" x-model.number="editDriver.dailyRate">
                                         
-                                        <div class="actions flex flex-col gap-2 mt-4">
-                                            <button class="btn btn-primary w-full" @click="
+                                        <div class="flex justify-between mt-4">
+                                            <button class="btn btn-ghost" @click="editDriver = null">CANCEL</button>
+                                            <button class="btn btn-ghost" style="font-weight: 600;" @click="
                                                 (async () => { try {
                                                     await $store.app.updateDriver($store.app.driverDetail.driver.id, editDriver);
                                                     editDriver = null;
-                                                } catch (e) { alert(e.message); } })()">Save Changes</button>
-                                            
-                                            <button class="btn btn-danger w-full" @click="
+                                                } catch (e) { alert(e.message); } })()">SAVE</button>
+                                        </div>
+                                        <div class="mt-4" style="text-align: center;">
+                                            <button class="btn btn-danger" @click="
                                                 (async () => { if (confirm('Archive this driver? They will no longer appear in active lists.')) {
                                                     try {
                                                         await $store.app.archiveDriver($store.app.driverDetail.driver.id);
@@ -326,18 +337,10 @@
                                                         $store.app.route = { name: 'home', params: {} };
                                                     } catch(e) { alert(e.message); }
                                                 } })()">Archive Driver</button>
-                                                
-                                            <button class="btn btn-secondary" @click="editDriver = null">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
                             </template>
-                        </div>
-                    </template>
-                    <template x-if="!$store.app.driverDetail">
-                        <div class="empty-state">
-                            <i class="fas fa-search"></i>
-                            <p>Loading driver details...</p>
                         </div>
                     </template>
                 </section>
@@ -348,31 +351,27 @@
     <!-- Navigation Tab Bar -->
     <nav id="tabbar" x-show="$store.app.ready">
         <a href="#" class="tab-item" :class="$store.app.route.name === 'home' ? 'active' : ''" @click.prevent="$store.app.route = { name: 'home', params: {} }">
-            <i class="fas fa-id-card"></i>
+            <i class="fas fa-comment-dots"></i>
             <span>Drivers</span>
         </a>
         <a href="#" class="tab-item" :class="$store.app.route.name === 'kids' ? 'active' : ''" @click.prevent="$store.app.route = { name: 'kids', params: {} }">
-            <i class="fas fa-children"></i>
+            <i class="fas fa-users"></i>
             <span>Kids</span>
         </a>
         <a href="#" class="tab-item" @click.prevent="location.reload()">
-            <i class="fas fa-sync-alt"></i>
+            <i class="fas fa-sync"></i>
             <span>Refresh</span>
         </a>
     </nav>
 
     <!-- Toast Notification -->
-    <div id="toast-root" x-show="$store.toast.visible" x-cloak 
-         :class="'toast toast-' + $store.toast.tone">
-        <div class="flex items-center gap-2">
-            <i class="fas" :class="$store.toast.tone === 'err' ? 'fa-circle-exclamation' : 'fa-circle-check'"></i>
-            <span x-text="$store.toast.message"></span>
-        </div>
+    <div id="toast-root" x-show="$store.toast.visible" x-cloak class="toast">
+        <span x-text="$store.toast.message"></span>
     </div>
 
     <!-- PWA Install Banner -->
-    <div id="install-banner" class="install-banner">
-        <span>Install App for best experience</span>
+    <div id="install-banner" class="install-banner" style="display: none; position: fixed; bottom: 5rem; left: 1rem; right: 1rem; background: var(--wa-white); padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; z-index: 100; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.875rem;">Install App for best experience</span>
         <button class="btn btn-primary btn-small">Install</button>
     </div>
 
