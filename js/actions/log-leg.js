@@ -3,7 +3,7 @@ const VALID_TYPES = new Set(['pickup', 'delivery']);
 export async function logLeg(db, kidId, type) {
   const kId = Number(kidId);
   if (!VALID_TYPES.has(type)) throw new Error('invalid type: ' + type);
-  return db.transaction('rw', db.kids, db.drivers, db.trips, async () => {
+  return db.transaction('rw', ['kids', 'drivers', 'trips'], async () => {
     const kid = await db.kids.get(kId);
     if (!kid) throw new Error('unknown kid');
     const dId = Number(kid.driverId);
