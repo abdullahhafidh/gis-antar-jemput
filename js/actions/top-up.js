@@ -32,11 +32,17 @@ export async function topUp(db, driverId, amount, note = '') {
 }
 
 export async function undoTopUp(db, topupId) {
-  return db.transaction('rw', db.topups, db.drivers, async () => {
-    const t = await db.topups.get(topupId);
-    if (!t) throw new Error('topup not found');
-    const driver = await db.drivers.get(t.driverId);
-    await db.topups.delete(topupId);
-    if (driver) await db.drivers.update(driver.id, { deposit: driver.deposit - t.amount });
+  console.warn('[undoTopUp] CALLED for id:', topupId);
+  console.trace();
+  return db.transaction('rw', ['topups', 'drivers'], async () => {
+    const t = await db.table('topups').get(topupId);
+    if (!t) return;
+    const driver = await db.table('drivers').get(t.driverId);
+    if (driver) {
+      await db.table('drivers').update(driver.id, {
+        deposit: (Number(driver.deposit) || 0) - (Number(t.amount) || 0)
+      });
+    }
+    await db.table('topups').delete(topupId);
   });
 }

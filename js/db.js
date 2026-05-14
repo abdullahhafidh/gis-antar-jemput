@@ -26,7 +26,8 @@ export function createDb(name) {
     if (typeof cb !== 'function') {
       return _origTx(...args, cb);
     }
-    console.log(`[db] TX ${id} START`, args);
+    const tableNames = args.map(a => Array.isArray(a) ? a.join(',') : (a.name || a));
+    console.log(`[db] TX ${id} START`, tableNames);
     return _origTx(...args, async () => {
       const res = await cb();
       console.log(`[db] TX ${id} CB_DONE`);
