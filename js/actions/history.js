@@ -2,7 +2,7 @@ import { undoLogLeg } from './log-leg.js';
 import { undoTopUp } from './top-up.js';
 
 export async function listHistory(db, driverId) {
-  console.log('[listHistory] starting with DB:', db.name, 'v' + db.verno);
+  console.log('[listHistory] starting. DB:', db.name, 'Open:', db.isOpen());
   const dId = Number(driverId);
   const allTops = await db.topups.toArray();
   const allTrips = await db.trips.toArray();

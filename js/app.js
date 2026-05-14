@@ -21,11 +21,13 @@ document.addEventListener('alpine:initialized', async () => {
   startRouter(route => app.routeChanged(route));
 });
 
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW failed', err));
   });
 }
+*/
 
 function paintActiveTab(route) {
   const map = { home: '/', drivers: '/drivers', driverDetail: '/drivers', kids: '/kids' };

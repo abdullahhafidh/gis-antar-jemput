@@ -27,7 +27,7 @@ export async function topUp(db, driverId, amount, note = '') {
       driver: verify
     };
   });
-  console.log('[topUp] transaction COMPLETED/COMMITTED');
+  console.log('[topUp] transaction COMPLETED/COMMITTED. Open:', db.isOpen());
   return tx;
 }
 

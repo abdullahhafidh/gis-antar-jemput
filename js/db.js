@@ -20,4 +20,4 @@ export function createDb(name) {
   console.log('DB created:', db.name, 'v' + db.verno);
   return db;
 }
-export const db = createDb('gis-v5-stable');
+export const db = createDb('gisv5');
