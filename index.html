@@ -81,29 +81,31 @@
       </template>
 
       <!-- Modal form -->
-      <div class="modal-backdrop" x-show="form" x-cloak @click.self="form = null">
-        <div class="modal" x-show="form">
-          <h3 x-text="editingId ? 'Edit Driver' : 'Add Driver'"></h3>
-          <label>Name <input x-model="form.name"></label>
-          <label>Phone <input x-model="form.phone"></label>
-          <label>Daily rate (Rp) <input type="number" min="1" x-model.number="form.dailyRate"></label>
-          <template x-if="!editingId">
-            <label>Initial deposit (Rp) <input type="number" min="0" x-model.number="form.initialDeposit"></label>
-          </template>
-          <label>Low-balance threshold (legs) <input type="number" min="1" x-model.number="form.lowBalanceThresholdLegs"></label>
-          <div class="actions">
-            <button class="btn" @click="
-              (async () => {
-                try {
-                  if (editingId) await $store.app.updateDriver(editingId, form);
-                  else await $store.app.addDriver(form);
-                  form = null; editingId = null;
-                } catch (e) { alert(e.message); }
-              })()">Save</button>
-            <button class="btn btn-ghost" @click="form = null">Cancel</button>
+      <template x-if="form">
+        <div class="modal-backdrop" x-cloak @click.self="form = null">
+          <div class="modal">
+            <h3 x-text="editingId ? 'Edit Driver' : 'Add Driver'"></h3>
+            <label>Name <input x-model="form.name"></label>
+            <label>Phone <input x-model="form.phone"></label>
+            <label>Daily rate (Rp) <input type="number" min="1" x-model.number="form.dailyRate"></label>
+            <template x-if="!editingId">
+              <label>Initial deposit (Rp) <input type="number" min="0" x-model.number="form.initialDeposit"></label>
+            </template>
+            <label>Low-balance threshold (legs) <input type="number" min="1" x-model.number="form.lowBalanceThresholdLegs"></label>
+            <div class="actions">
+              <button class="btn" @click="
+                (async () => {
+                  try {
+                    if (editingId) await $store.app.updateDriver(editingId, form);
+                    else await $store.app.addDriver(form);
+                    form = null; editingId = null;
+                  } catch (e) { alert(e.message); }
+                })()">Save</button>
+              <button class="btn btn-ghost" @click="form = null">Cancel</button>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </section>
   </template>
 
@@ -180,21 +182,23 @@
         </div>
 
         <!-- Top up modal -->
-        <div class="modal-backdrop" x-show="topUpForm" x-cloak @click.self="topUpForm = null">
-          <div class="modal" x-show="topUpForm">
-            <h3>Top up</h3>
-            <label>Amount (Rp) <input type="number" min="1" x-model.number="topUpForm.amount"></label>
-            <label>Note <input x-model="topUpForm.note"></label>
-            <div class="actions">
-              <button class="btn" @click="
-                (async () => { try {
-                  await $store.app.topUpDriver($store.app.driverDetail.driver.id, topUpForm.amount, topUpForm.note);
-                  topUpForm = null;
-                } catch (e) { alert(e.message); } })()">Save</button>
-              <button class="btn btn-ghost" @click="topUpForm = null">Cancel</button>
+        <template x-if="topUpForm">
+          <div class="modal-backdrop" x-cloak @click.self="topUpForm = null">
+            <div class="modal">
+              <h3>Top up</h3>
+              <label>Amount (Rp) <input type="number" min="1" x-model.number="topUpForm.amount"></label>
+              <label>Note <input x-model="topUpForm.note"></label>
+              <div class="actions">
+                <button class="btn" @click="
+                  (async () => { try {
+                    await $store.app.topUpDriver($store.app.driverDetail.driver.id, topUpForm.amount, topUpForm.note);
+                    topUpForm = null;
+                  } catch (e) { alert(e.message); } })()">Save</button>
+                <button class="btn btn-ghost" @click="topUpForm = null">Cancel</button>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </template>
     <div x-show="!$store.app.driverDetail">Driver not found.</div>
@@ -219,29 +223,31 @@
       </article>
     </template>
 
-    <div class="modal-backdrop" x-show="form" x-cloak @click.self="form = null">
-      <div class="modal" x-show="form">
-        <h3 x-text="editingId ? 'Edit Kid' : 'Add Kid'"></h3>
-        <label>Name <input x-model="form.name"></label>
-        <label>Driver
-          <select x-model.number="form.driverId">
-            <option :value="null">— No driver —</option>
-            <template x-for="d in $store.app.activeDrivers()" :key="d.id">
-              <option :value="d.id" x-text="d.name"></option>
-            </template>
-          </select>
-        </label>
-        <div class="actions">
-          <button class="btn" @click="
-            (async () => { try {
-              if (editingId) await $store.app.updateKid(editingId, form);
-              else await $store.app.addKid(form);
-              form = null; editingId = null;
-            } catch(e) { alert(e.message); } })()">Save</button>
-          <button class="btn btn-ghost" @click="form = null">Cancel</button>
+    <template x-if="form">
+      <div class="modal-backdrop" x-cloak @click.self="form = null">
+        <div class="modal">
+          <h3 x-text="editingId ? 'Edit Kid' : 'Add Kid'"></h3>
+          <label>Name <input x-model="form.name"></label>
+          <label>Driver
+            <select x-model.number="form.driverId">
+              <option :value="null">— No driver —</option>
+              <template x-for="d in $store.app.activeDrivers()" :key="d.id">
+                <option :value="d.id" x-text="d.name"></option>
+              </template>
+            </select>
+          </label>
+          <div class="actions">
+            <button class="btn" @click="
+              (async () => { try {
+                if (editingId) await $store.app.updateKid(editingId, form);
+                else await $store.app.addKid(form);
+                form = null; editingId = null;
+              } catch(e) { alert(e.message); } })()">Save</button>
+            <button class="btn btn-ghost" @click="form = null">Cancel</button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </section>
 </template>
 </div>
