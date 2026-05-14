@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gis-pwa-v3';
+const CACHE_NAME = 'gis-pwa-v4';
 const ASSETS = [
   './',
   './index.html',
