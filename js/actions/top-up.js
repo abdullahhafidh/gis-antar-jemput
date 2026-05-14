@@ -1,6 +1,8 @@
 export async function topUp(db, driverId, amount, note = '') {
   console.log('[topUp] starting with DB:', db.name, 'v' + db.verno);
   const dId = Number(driverId);
+  const before = await db.topups.count();
+  console.log('[topUp] count before:', before);
   if (!(Number(amount) > 0)) throw new Error('amount must be > 0');
   const tx = await db.transaction('rw', ['drivers', 'topups'], async () => {
     const driver = await db.drivers.get(dId);

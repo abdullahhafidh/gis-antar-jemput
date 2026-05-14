@@ -1,3 +1,6 @@
+const sessionId = Math.random().toString(36).substring(7);
+console.log('[db.js] Module loaded. Session:', sessionId);
+
 export function createDb(name) {
   console.log('Creating DB instance:', name);
   const db = new globalThis.Dexie(name);
@@ -17,4 +20,4 @@ export function createDb(name) {
   console.log('DB created:', db.name, 'v' + db.verno);
   return db;
 }
-export const db = createDb('gis-antar-jemput');
+export const db = createDb('gis-antar-jemput-v2');
