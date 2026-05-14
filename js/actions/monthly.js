@@ -2,10 +2,11 @@ export async function monthlySummary(db, driverId, year, month) {
   // month: 1..12
   const start = new Date(year, month - 1, 1).toISOString();
   const end = new Date(year, month, 1).toISOString();
+  const dId = Number(driverId);
   const inRange = r => r.occurredAt >= start && r.occurredAt < end;
 
-  const trips = (await db.trips.where({ driverId }).toArray()).filter(inRange);
-  const tops  = (await db.topups.where({ driverId }).toArray()).filter(inRange);
+  const trips = (await db.trips.where('driverId').equals(dId).toArray()).filter(inRange);
+  const tops  = (await db.topups.where('driverId').equals(dId).toArray()).filter(inRange);
 
   const perKidMap = new Map();
   for (const t of trips) {

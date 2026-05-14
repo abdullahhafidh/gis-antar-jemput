@@ -2,9 +2,10 @@ import { undoLogLeg } from './log-leg.js';
 import { undoTopUp } from './top-up.js';
 
 export async function listHistory(db, driverId) {
+  const dId = Number(driverId);
   const [trips, tops] = await Promise.all([
-    db.trips.where({ driverId }).toArray(),
-    db.topups.where({ driverId }).toArray()
+    db.trips.where('driverId').equals(dId).toArray(),
+    db.topups.where('driverId').equals(dId).toArray()
   ]);
   const rows = [
     ...trips.map(t => ({
