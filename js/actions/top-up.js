@@ -13,10 +13,12 @@ export async function topUp(db, driverId, amount, note = '') {
     const newDeposit = currentDeposit + rounded;
     console.log('[topUp] updating driver', { dId, was: currentDeposit, add: rounded, now: newDeposit });
     await db.drivers.update(dId, { deposit: newDeposit });
+    const verifyTopup = await db.topups.get(id);
+    console.log('[topUp] verify topup record in DB:', verifyTopup);
     const verify = await db.drivers.get(dId);
-    console.log('[topUp] verify deposit in DB:', verify.deposit);
+    console.log('[topUp] verify driver deposit in DB:', verify.deposit);
     return {
-      topup: await db.topups.get(id),
+      topup: verifyTopup,
       driver: verify
     };
   });

@@ -89,12 +89,13 @@ export function registerStores(Alpine) {
     async openDriverDetail(id) {
       const driver = await Drivers.getDriver(db, id);
       if (!driver) { this.driverDetail = null; return; }
-      const now = new Date();
       const history = await listHistory(db, id);
-      const monthly = await monthlySummary(db, id, now.getFullYear(), now.getMonth() + 1);
+      const monthly = await monthlySummary(db, id, this.driverDetail?.selectedYear || new Date().getFullYear(), this.driverDetail?.selectedMonth || (new Date().getMonth() + 1));
+      console.log('[openDriverDetail] data fetched:', { id, driver, historyCount: history.length });
       this.driverDetail = {
         driver, history, monthly,
-        selectedYear: now.getFullYear(), selectedMonth: now.getMonth() + 1
+        selectedYear: this.driverDetail?.selectedYear || new Date().getFullYear(),
+        selectedMonth: this.driverDetail?.selectedMonth || (new Date().getMonth() + 1)
       };
     },
 

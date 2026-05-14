@@ -7,6 +7,7 @@ export async function recomputeDeposits(db) {
       db.trips.where('driverId').equals(dId).toArray(),
       db.topups.where('driverId').equals(dId).toArray()
     ]);
+    console.log(`[sanity] driver ${dId} has ${trips.length} trips and ${tops.length} topups`);
     const expected = tops.reduce((s, t) => s + (Number(t.amount) || 0), 0)
                    - trips.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (expected !== d.deposit) {
