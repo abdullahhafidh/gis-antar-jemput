@@ -18,7 +18,44 @@
     </header>
     <main id="app">
         <div x-show="$store.app.ready === false">Loading…</div>
-        <div x-show="$store.app.ready" id="view-root"></div>
+        <div id="view-root" x-show="$store.app.ready">
+  <!-- HOME -->
+  <template x-if="$store.app.route.name === 'home'">
+    <section>
+      <div class="banner banner-warn" x-show="$store.app.anyLowBalance()">
+        Low balance on one or more drivers — top up soon.
+      </div>
+      <template x-if="$store.app.kids.length === 0 || $store.app.activeDrivers().length === 0">
+        <div class="empty">
+          <p>Welcome. To start, add a driver and a kid.</p>
+          <a class="btn" href="#/drivers">Add Driver</a>
+          <a class="btn btn-ghost" href="#/kids">Add Kid</a>
+        </div>
+      </template>
+      <template x-for="kid in $store.app.kids" :key="kid.id">
+        <article class="kid-card">
+          <header>
+            <h3 x-text="kid.name"></h3>
+            <span class="muted" x-text="$store.app.driverById(kid.driverId)?.name || 'No driver assigned'"></span>
+          </header>
+          <div class="chips">
+            <template x-for="leg in $store.app.legsForKidToday(kid.id)" :key="leg.id">
+              <span class="chip" x-text="(leg.type === 'pickup' ? '✓ Pickup ' : '✓ Delivery ') + new Date(leg.occurredAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })"></span>
+            </template>
+          </div>
+          <div class="actions">
+            <button class="btn"
+                    :disabled="kid.driverId == null"
+                    @click="$store.app.logLegFor(kid.id, 'pickup')">Log Pickup</button>
+            <button class="btn btn-secondary"
+                    :disabled="kid.driverId == null"
+                    @click="$store.app.logLegFor(kid.id, 'delivery')">Log Delivery</button>
+          </div>
+        </article>
+      </template>
+    </section>
+  </template>
+</div>
     </main>
     <nav id="tabbar">
         <a href="#/" data-route="/">Home</a>

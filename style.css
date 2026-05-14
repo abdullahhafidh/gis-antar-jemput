@@ -133,3 +133,18 @@ main {
     justify-content: space-between;
     align-items: center;
 }
+
+.banner { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; }
+.banner-warn { background: #7c2d12; color: #fed7aa; }
+.kid-card { background: #1e293b; border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
+.kid-card header { display: flex; justify-content: space-between; align-items: baseline; }
+.kid-card .chips { margin: 0.5rem 0; display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.kid-card .chip { background: #0f172a; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; color: #94a3b8; }
+.kid-card .actions { display: flex; gap: 0.5rem; }
+.kid-card .actions .btn { flex: 1; }
+.btn-secondary { background: #334155; }
+.muted { color: #94a3b8; font-size: 0.85rem; }
+.empty { text-align: center; padding: 2rem; }
+.empty .btn { display: inline-block; margin: 0.25rem; }
+.btn-ghost { background: transparent; border: 1px solid #475569; }
+[x-cloak] { display: none !important; }
