@@ -171,3 +171,5 @@ main {
 .btn-small { padding: 0.2rem 0.4rem; font-size: 0.8rem; }
 .month-picker { display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0; }
 .row { display: flex; justify-content: space-between; padding: 0.25rem 0; }
+.kid-row { display: grid; grid-template-columns: 1fr 1fr auto; align-items: center; gap: 0.5rem; padding: 0.5rem; border-bottom: 1px solid #1e293b; }
+.modal select { width: 100%; padding: 0.4rem; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 0.25rem; }

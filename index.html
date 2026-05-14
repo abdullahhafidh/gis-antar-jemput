@@ -201,6 +201,50 @@
     <div x-show="!$store.app.driverDetail">Driver not found.</div>
   </section>
 </template>
+
+<template x-if="$store.app.route.name === 'kids'">
+  <section x-data="{ form: null, editingId: null }">
+    <h2>Kids</h2>
+    <button class="btn" @click="form = { name: '', driverId: null }; editingId = null">+ Add Kid</button>
+    <template x-for="k in $store.app.kids" :key="k.id">
+      <article class="kid-row">
+        <strong x-text="k.name"></strong>
+        <span class="muted" x-text="$store.app.driverById(k.driverId)?.name || 'No driver'"></span>
+        <div class="actions">
+          <button class="btn btn-ghost btn-small" @click="form = { name: k.name, driverId: k.driverId }; editingId = k.id">Edit</button>
+          <button class="btn btn-ghost btn-small" @click="
+            (async () => { if (confirm('Delete ' + k.name + '?')) {
+              try { await $store.app.deleteKid(k.id); } catch(e) { alert(e.message); }
+            } })()">Delete</button>
+        </div>
+      </article>
+    </template>
+
+    <div class="modal-backdrop" x-show="form" x-cloak @click.self="form = null">
+      <div class="modal" x-show="form">
+        <h3 x-text="editingId ? 'Edit Kid' : 'Add Kid'"></h3>
+        <label>Name <input x-model="form.name"></label>
+        <label>Driver
+          <select x-model.number="form.driverId">
+            <option :value="null">— No driver —</option>
+            <template x-for="d in $store.app.activeDrivers()" :key="d.id">
+              <option :value="d.id" x-text="d.name"></option>
+            </template>
+          </select>
+        </label>
+        <div class="actions">
+          <button class="btn" @click="
+            (async () => { try {
+              if (editingId) await $store.app.updateKid(editingId, form);
+              else await $store.app.addKid(form);
+              form = null; editingId = null;
+            } catch(e) { alert(e.message); } })()">Save</button>
+          <button class="btn btn-ghost" @click="form = null">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
 </div>
     </main>
     <nav id="tabbar">
