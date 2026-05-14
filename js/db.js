@@ -24,7 +24,6 @@ export function createDb(name) {
     const id = Math.random().toString(36).substring(7);
     const cb = args.pop();
     if (typeof cb !== 'function') {
-      console.error('[db] Transaction missing callback!', args);
       return _origTx(...args, cb);
     }
     console.log(`[db] TX ${id} START`, args);
@@ -43,4 +42,4 @@ export function createDb(name) {
 
   return db;
 }
-export const db = createDb('gisv5');
+export const db = createDb('gisv10');

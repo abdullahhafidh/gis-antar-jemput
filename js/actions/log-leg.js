@@ -34,11 +34,15 @@ export async function logLeg(db, kidId, type) {
 }
 
 export async function undoLogLeg(db, tripId) {
-  return db.transaction('rw', db.trips, db.drivers, async () => {
-    const trip = await db.trips.get(tripId);
-    if (!trip) throw new Error('trip not found');
-    const driver = await db.drivers.get(trip.driverId);
-    await db.trips.delete(tripId);
-    if (driver) await db.drivers.update(driver.id, { deposit: driver.deposit + trip.amount });
+  return db.transaction('rw', ['trips', 'drivers'], async () => {
+    const trip = await db.table('trips').get(tripId);
+    if (!trip) return;
+    const driver = await db.table('drivers').get(trip.driverId);
+    if (driver) {
+      await db.table('drivers').update(driver.id, {
+        deposit: (Number(driver.deposit) || 0) + (Number(trip.amount) || 0)
+      });
+    }
+    await db.table('trips').delete(tripId);
   });
 }

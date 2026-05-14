@@ -3,8 +3,8 @@ export async function addDriver(db, { name, phone = '', dailyRate, initialDeposi
   if (!(Number(dailyRate) > 0)) throw new Error('dailyRate must be > 0');
   if (Number(initialDeposit) < 0) throw new Error('initialDeposit must be >= 0');
   const now = new Date().toISOString();
-  return db.transaction('rw', db.drivers, db.topups, async () => {
-    const id = await db.drivers.add({
+  return db.transaction('rw', ['drivers', 'topups'], async () => {
+    const id = await db.table('drivers').add({
       name, phone,
       dailyRate: Math.round(dailyRate),
       deposit: Math.round(initialDeposit),
@@ -13,14 +13,14 @@ export async function addDriver(db, { name, phone = '', dailyRate, initialDeposi
       createdAt: now
     });
     if (Number(initialDeposit) > 0) {
-      await db.topups.add({
+      await db.table('topups').add({
         driverId: id,
         amount: Math.round(initialDeposit),
-        note: 'Initial deposit',
+        note: 'Initial Deposit',
         occurredAt: now
       });
     }
-    return db.drivers.get(id);
+    return id;
   });
 }
 
