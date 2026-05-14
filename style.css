@@ -148,3 +148,13 @@ main {
 .empty .btn { display: inline-block; margin: 0.25rem; }
 .btn-ghost { background: transparent; border: 1px solid #475569; }
 [x-cloak] { display: none !important; }
+
+.driver-card { background: #1e293b; border-radius: 0.75rem; padding: 1rem; margin: 0.75rem 0; }
+.driver-card.archived { opacity: 0.5; }
+.driver-card .row { display: flex; justify-content: space-between; padding: 0.2rem 0; }
+.driver-card .row.low { color: #f87171; font-weight: 600; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: #1e293b; padding: 1.25rem; border-radius: 0.75rem; width: min(90vw, 22rem); }
+.modal label { display: block; margin: 0.5rem 0; }
+.modal input { width: 100%; padding: 0.4rem; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 0.25rem; }
+.modal .actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }

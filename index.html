@@ -55,6 +55,58 @@
       </template>
     </section>
   </template>
+
+  <!-- DRIVERS -->
+  <template x-if="$store.app.route.name === 'drivers'">
+    <section x-data="{ form: null, editingId: null,
+                       blank() { return { name: '', phone: '', dailyRate: 25000, initialDeposit: 0, lowBalanceThresholdLegs: 4 }; } }">
+      <h2>Drivers</h2>
+      <button class="btn" @click="form = blank(); editingId = null">+ Add Driver</button>
+
+      <template x-for="d in $store.app.drivers" :key="d.id">
+        <article class="driver-card" :class="{ archived: d.archived }">
+          <header>
+            <a :href="'#/drivers/' + d.id"><strong x-text="d.name"></strong></a>
+            <span class="muted" x-text="d.archived ? '(archived)' : ''"></span>
+          </header>
+          <div class="row"><span>Rate</span><span x-text="'Rp ' + d.dailyRate.toLocaleString('id-ID')"></span></div>
+          <div class="row" :class="{ low: $store.app.isLowBalance(d) }">
+            <span>Deposit</span>
+            <span x-text="'Rp ' + d.deposit.toLocaleString('id-ID')"></span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost" @click="form = { name: d.name, phone: d.phone, dailyRate: d.dailyRate, lowBalanceThresholdLegs: d.lowBalanceThresholdLegs }; editingId = d.id">Edit</button>
+            <button class="btn btn-ghost" x-show="!d.archived" @click="$store.app.archiveDriver(d.id).catch(e => alert(e.message))">Archive</button>
+          </div>
+        </article>
+      </template>
+
+      <!-- Modal form -->
+      <div class="modal-backdrop" x-show="form" x-cloak @click.self="form = null">
+        <div class="modal" x-show="form">
+          <h3 x-text="editingId ? 'Edit Driver' : 'Add Driver'"></h3>
+          <label>Name <input x-model="form.name"></label>
+          <label>Phone <input x-model="form.phone"></label>
+          <label>Daily rate (Rp) <input type="number" min="1" x-model.number="form.dailyRate"></label>
+          <template x-if="!editingId">
+            <label>Initial deposit (Rp) <input type="number" min="0" x-model.number="form.initialDeposit"></label>
+          </template>
+          <label>Low-balance threshold (legs) <input type="number" min="1" x-model.number="form.lowBalanceThresholdLegs"></label>
+          <div class="actions">
+            <button class="btn" @click="
+              (async () => {
+                try {
+                  if (editingId) await $store.app.updateDriver(editingId, form);
+                  else await $store.app.addDriver(form);
+                  form = null; editingId = null;
+                } catch (e) { alert(e.message); }
+              })()">Save</button>
+            <button class="btn btn-ghost" @click="form = null">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
 </div>
     </main>
     <nav id="tabbar">
