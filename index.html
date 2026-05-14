@@ -231,19 +231,19 @@
                                         <p>No transaction history.</p>
                                     </div>
                                 </template>
-                                <template x-for="h in $store.app.driverDetail.history" :key="h.id + h.type">
+                                <template x-for="h in $store.app.driverDetail.history" :key="h.id + h.kind">
                                     <div class="history-item">
                                         <div>
-                                            <div style="font-weight: 500; color: var(--wa-text-main);" x-text="h.type === 'trip' ? (h.kind === 'pickup' ? 'Pickup' : 'Delivery') : 'Top Up'"></div>
+                                            <div style="font-weight: 500; color: var(--wa-text-main);" x-text="h.kind === 'trip' ? (h.type === 'pickup' ? 'Pickup' : 'Delivery') : 'Top Up'"></div>
                                             <div class="muted" style="font-size: 0.75rem;" x-text="formatDate(h.occurredAt)"></div>
-                                            <div class="muted" style="font-size: 0.75rem;" x-text="h.note || (h.type === 'trip' ? h.kidName : '')"></div>
+                                            <div class="muted" style="font-size: 0.75rem;" x-text="h.note || (h.kind === 'trip' ? $store.app.kidById(h.kidId)?.name : '')"></div>
                                         </div>
                                         <div style="text-align: right;">
-                                            <div :class="h.type === 'trip' ? 'amount-neg' : 'amount-pos'" x-text="(h.type === 'trip' ? '−' : '+') + formatIDR(h.amount)"></div>
+                                            <div :class="h.kind === 'trip' ? 'amount-neg' : 'amount-pos'" x-text="(h.kind === 'trip' ? '−' : '+') + formatIDR(h.amount)"></div>
                                             <button class="btn btn-ghost btn-small" style="padding: 0; margin-top: 0.25rem; font-size: 0.7rem; color: var(--wa-danger);" @click="
                                                 (async () => { if (confirm('Undo this transaction?')) {
                                                     try {
-                                                        if (h.type === 'trip') await $store.app.deleteTrip(h.id);
+                                                        if (h.kind === 'trip') await $store.app.deleteTrip(h.id);
                                                         else await $store.app.deleteTopup(h.id);
                                                         await $store.app.openDriverDetail($store.app.driverDetail.driver.id);
                                                     } catch(e) { alert(e.message); }

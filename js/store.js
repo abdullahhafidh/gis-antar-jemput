@@ -65,6 +65,9 @@ export function registerStores(Alpine) {
     driverById(id) {
       return this.drivers.find(d => d.id === id);
     },
+    kidById(id) {
+      return this.kids.find(k => k.id === id);
+    },
 
     activeDrivers() {
       return this.drivers.filter(d => !d.archived);
