@@ -36,7 +36,7 @@
 
                     <div style="background: var(--wa-white);">
                         <template x-for="d in $store.app.activeDrivers()" :key="d.id">
-                            <article class="list-item" @click="$store.app.openDriverDetail(d.id)">
+                            <article class="list-item" @click="location.hash = '#/drivers/' + d.id">
                                 <div class="item-avatar driver">
                                     <i class="fas fa-user"></i>
                                 </div>
