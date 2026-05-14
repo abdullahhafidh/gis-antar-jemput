@@ -46,6 +46,7 @@ export function registerStores(Alpine) {
     },
 
     async refreshLists() {
+      console.log('[refreshLists] running...');
       this.drivers = await Drivers.listDrivers(db, { includeArchived: true });
       this.kids = await Kids.listKids(db);
       await this.refreshTodayLegs();

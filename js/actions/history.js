@@ -3,6 +3,8 @@ import { undoTopUp } from './top-up.js';
 
 export async function listHistory(db, driverId) {
   const dId = Number(driverId);
+  const allTops = await db.topups.toArray();
+  console.log('[listHistory] ALL topups in DB:', allTops);
   const [trips, tops] = await Promise.all([
     db.trips.where('driverId').equals(dId).toArray(),
     db.topups.where('driverId').equals(dId).toArray()

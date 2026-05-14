@@ -13,8 +13,8 @@ export async function recomputeDeposits(db) {
     const expected = tops.reduce((s, t) => s + (Number(t.amount) || 0), 0)
                    - trips.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (expected !== d.deposit) {
-      console.warn(`[sanity] Fixing deposit for driver ${dId} (${d.name}): ${d.deposit} -> ${expected}`);
-      await db.drivers.update(dId, { deposit: expected });
+      console.warn(`[sanity] WOULD fix deposit for driver ${dId} (${d.name}): ${d.deposit} -> ${expected} (BUT SKIPPED)`);
+      // await db.drivers.update(dId, { deposit: expected });
       fixes.push({ driverId: dId, was: d.deposit, now: expected });
     }
   }
