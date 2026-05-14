@@ -158,3 +158,16 @@ main {
 .modal label { display: block; margin: 0.5rem 0; }
 .modal input { width: 100%; padding: 0.4rem; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 0.25rem; }
 .modal .actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.detail-stats { display: flex; gap: 1rem; margin: 1rem 0; }
+.detail-stats > div { background: #1e293b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; }
+.detail-stats span { display: block; font-size: 0.75rem; }
+.detail-stats strong.low { color: #f87171; }
+.tabs { display: flex; gap: 0.5rem; margin: 1rem 0; }
+.tabs button { background: #1e293b; color: #cbd5e1; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; }
+.tabs button.active { background: #6366f1; color: white; }
+.history-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #1e293b; align-items: center; }
+.history-row.trip span:nth-child(3) { color: #f87171; }
+.history-row.topup span:nth-child(3) { color: #10b981; }
+.btn-small { padding: 0.2rem 0.4rem; font-size: 0.8rem; }
+.month-picker { display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0; }
+.row { display: flex; justify-content: space-between; padding: 0.25rem 0; }

@@ -107,6 +107,100 @@
       </div>
     </section>
   </template>
+
+  <!-- DRIVER DETAIL -->
+  <template x-if="$store.app.route.name === 'driverDetail'">
+  <section x-data="{ tab: 'history', topUpForm: null }">
+    <template x-if="$store.app.driverDetail">
+      <div>
+        <a class="muted" href="#/drivers">← Drivers</a>
+        <h2 x-text="$store.app.driverDetail.driver.name"></h2>
+        <div class="detail-stats">
+          <div>
+            <span class="muted">Deposit</span>
+            <strong :class="{ low: $store.app.isLowBalance($store.app.driverDetail.driver) }"
+                    x-text="'Rp ' + $store.app.driverDetail.driver.deposit.toLocaleString('id-ID')"></strong>
+          </div>
+          <div><span class="muted">Daily rate</span><strong x-text="'Rp ' + $store.app.driverDetail.driver.dailyRate.toLocaleString('id-ID')"></strong></div>
+          <div><span class="muted">Legs remaining</span><strong x-text="Math.floor($store.app.driverDetail.driver.deposit / $store.app.driverDetail.driver.dailyRate)"></strong></div>
+        </div>
+        <button class="btn" @click="topUpForm = { amount: 0, note: '' }">Top Up</button>
+
+        <nav class="tabs">
+          <button :class="{ active: tab === 'history' }" @click="tab = 'history'">History</button>
+          <button :class="{ active: tab === 'monthly' }" @click="tab = 'monthly'">Monthly</button>
+        </nav>
+
+        <div x-show="tab === 'history'">
+          <template x-for="row in $store.app.driverDetail.history" :key="row.kind + ':' + row.id">
+            <div class="history-row" :class="row.kind">
+              <span class="muted" x-text="new Date(row.occurredAt).toLocaleString('id-ID')"></span>
+              <span x-text="row.kind === 'trip' ? row.type : 'top-up'"></span>
+              <span x-text="(row.kind === 'trip' ? '−' : '+') + 'Rp ' + row.amount.toLocaleString('id-ID')"></span>
+              <button class="btn btn-ghost btn-small" @click="
+                (async () => { if (confirm('Delete this entry?')) {
+                  if (row.kind === 'trip') await $store.app.deleteTrip(row.id);
+                  else await $store.app.deleteTopup(row.id);
+                } })()">✕</button>
+            </div>
+          </template>
+        </div>
+
+        <div x-show="tab === 'monthly'">
+          <div class="month-picker">
+            <button class="btn btn-ghost" @click="
+              (async () => { const m = $store.app.driverDetail.selectedMonth - 1;
+                if (m < 1) await $store.app.setMonth($store.app.driverDetail.selectedYear - 1, 12);
+                else await $store.app.setMonth($store.app.driverDetail.selectedYear, m); })()">←</button>
+            <strong x-text="$store.app.driverDetail.selectedYear + '-' + String($store.app.driverDetail.selectedMonth).padStart(2, '0')"></strong>
+            <button class="btn btn-ghost" @click="
+              (async () => { const m = $store.app.driverDetail.selectedMonth + 1;
+                if (m > 12) await $store.app.setMonth($store.app.driverDetail.selectedYear + 1, 1);
+                else await $store.app.setMonth($store.app.driverDetail.selectedYear, m); })()">→</button>
+          </div>
+          <div class="row"><span>Trips</span><strong x-text="$store.app.driverDetail.monthly.tripCount"></strong></div>
+          <div class="row"><span>Trip total</span><strong x-text="'Rp ' + $store.app.driverDetail.monthly.tripTotal.toLocaleString('id-ID')"></strong></div>
+          <div class="row"><span>Top-ups</span><strong x-text="'Rp ' + $store.app.driverDetail.monthly.topupTotal.toLocaleString('id-ID')"></strong></div>
+          <h4>Per kid</h4>
+          <template x-for="pk in $store.app.driverDetail.monthly.perKid" :key="pk.kidId">
+            <div class="row">
+              <span x-text="$store.app.kids.find(k => k.id === pk.kidId)?.name || ('Kid ' + pk.kidId)"></span>
+              <span x-text="pk.count + ' legs · Rp ' + pk.total.toLocaleString('id-ID')"></span>
+            </div>
+          </template>
+          <button class="btn" @click="
+            (() => {
+              const m = $store.app.driverDetail.monthly;
+              const d = $store.app.driverDetail.driver;
+              const text = `${d.name} — ${m.year}-${String(m.month).padStart(2, '0')}\n`
+                + `Trips: ${m.tripCount} (Rp ${m.tripTotal.toLocaleString('id-ID')})\n`
+                + `Top-ups: Rp ${m.topupTotal.toLocaleString('id-ID')}`;
+              if (navigator.share) navigator.share({ text }).catch(() => {});
+              else { navigator.clipboard.writeText(text); alert('Copied to clipboard'); }
+            })()">Share</button>
+        </div>
+
+        <!-- Top up modal -->
+        <div class="modal-backdrop" x-show="topUpForm" x-cloak @click.self="topUpForm = null">
+          <div class="modal" x-show="topUpForm">
+            <h3>Top up</h3>
+            <label>Amount (Rp) <input type="number" min="1" x-model.number="topUpForm.amount"></label>
+            <label>Note <input x-model="topUpForm.note"></label>
+            <div class="actions">
+              <button class="btn" @click="
+                (async () => { try {
+                  await $store.app.topUpDriver($store.app.driverDetail.driver.id, topUpForm.amount, topUpForm.note);
+                  topUpForm = null;
+                } catch (e) { alert(e.message); } })()">Save</button>
+              <button class="btn btn-ghost" @click="topUpForm = null">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <div x-show="!$store.app.driverDetail">Driver not found.</div>
+  </section>
+</template>
 </div>
     </main>
     <nav id="tabbar">
