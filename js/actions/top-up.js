@@ -2,7 +2,7 @@ export async function topUp(db, driverId, amount, note = '') {
   console.log('[topUp] starting with DB:', db.name, 'v' + db.verno);
   const dId = Number(driverId);
   if (!(Number(amount) > 0)) throw new Error('amount must be > 0');
-  return db.transaction('rw', ['drivers', 'topups'], async () => {
+  const tx = await db.transaction('rw', ['drivers', 'topups'], async () => {
     const driver = await db.drivers.get(dId);
     if (!driver) throw new Error('unknown driver');
     const rounded = Math.round(Number(amount) || 0);
@@ -25,6 +25,8 @@ export async function topUp(db, driverId, amount, note = '') {
       driver: verify
     };
   });
+  console.log('[topUp] transaction COMPLETED/COMMITTED');
+  return tx;
 }
 
 export async function undoTopUp(db, topupId) {

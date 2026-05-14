@@ -1,6 +1,13 @@
 export function createDb(name) {
   console.log('Creating DB instance:', name);
   const db = new globalThis.Dexie(name);
+  if (db.isOpen()) {
+    console.warn('DB is already open!');
+  }
+  db.on('versionchange', () => {
+    console.warn('DB versionchange event! Closing DB...');
+    db.close();
+  });
   db.version(2).stores({
     drivers: '++id,name,createdAt,archived',
     kids:    '++id,name,driverId,createdAt',
