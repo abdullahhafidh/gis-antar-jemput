@@ -31,7 +31,7 @@
 - [ ] Tap Share — `navigator.share` opens, or text is copied to clipboard with alert confirmation.
 
 ## PWA / offline
-- [ ] In DevTools Application → Service Workers, confirm `sw.js` is activated, `gis-pwa-v2`.
+- [ ] In DevTools Application → Service Workers, confirm `sw.js` is activated, `gis-pwa-v3`.
 - [ ] DevTools → Network → Offline, reload the page — app still loads from cache.
 - [ ] Add a driver while offline — data persists. Reopen browser — driver still there.
 

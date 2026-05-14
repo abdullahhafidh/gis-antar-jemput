@@ -28,7 +28,10 @@ export async function updateDriver(db, id, patch) {
   const allowed = ['name', 'phone', 'dailyRate', 'lowBalanceThresholdLegs'];
   const clean = {};
   for (const k of allowed) if (k in patch) clean[k] = patch[k];
-  if ('dailyRate' in clean && !(Number(clean.dailyRate) > 0)) throw new Error('dailyRate must be > 0');
+  if ('dailyRate' in clean) {
+    if (!(Number(clean.dailyRate) > 0)) throw new Error('dailyRate must be > 0');
+    clean.dailyRate = Math.round(clean.dailyRate);
+  }
   await db.drivers.update(id, clean);
   return db.drivers.get(id);
 }
